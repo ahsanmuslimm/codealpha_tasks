@@ -30,7 +30,7 @@ def _authorize_finding(finding_id: str, user: User, db: Session) -> Finding:
 def list_findings(
     scan_id: str,
     severity: Optional[Severity] = None,
-    status: Optional[TriageStatus] = None,
+    triage_status: Optional[TriageStatus] = None,
     cwe_id: Optional[str] = None,
     owasp_category: Optional[str] = None,
     skip: int = Query(0, ge=0),
@@ -50,8 +50,8 @@ def list_findings(
     q = db.query(Finding).filter(Finding.scan_id == scan_id)
     if severity:
         q = q.filter(Finding.severity == severity)
-    if status:
-        q = q.filter(Finding.status == status)
+    if triage_status:
+        q = q.filter(Finding.status == triage_status)
     if cwe_id:
         q = q.filter(Finding.cwe_id == cwe_id)
     if owasp_category:

@@ -145,11 +145,13 @@ def run():
 
     # ── Severity filter ────────────────────────────────────────────────────
     r = client.get(f"/api/findings/scan/{scan_id}?severity=high", headers=headers)
+    assert r.status_code == 200, r.text
     high = r.json()
     assert all(f["severity"] == "high" for f in high)
     print(f"PASS: severity=high filter works ({len(high)} high findings)")
 
     r = client.get(f"/api/findings/scan/{scan_id}?severity=medium", headers=headers)
+    assert r.status_code == 200, r.text
     medium = r.json()
     assert all(f["severity"] == "medium" for f in medium)
     print(f"PASS: severity=medium filter works ({len(medium)} medium findings)")
