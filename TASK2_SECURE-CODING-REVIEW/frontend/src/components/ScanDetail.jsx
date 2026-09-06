@@ -26,35 +26,93 @@ export default function ScanDetail() {
   const [scan, setScan] = useState(null);
   const [findings, setFindings] = useState([]);
   const [selected, setSelected] = useState(null);
-  const [filters, setFilters] = useState({ severity: '', status: '' });
+  const [filters, setFilters] = useState({ severity: '', triage_status: '' });
   const [report, setReport] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const loadScan = async () => {
-    const res = await scans.get(id);
-    setScan(res.data);
+    try {
+      const res = await scans.get(id);
+      setScan(res.data);
+    } catch (err) {
+      console.error('Failed to load scan:', err);
+    }
   };
 
   const loadFindings = async () => {
-    const params = {};
-    if (filters.severity) params.severity = filters.severity;
-    if (filters.status) params.status = filters.status;
-    const res = await findingsApi.list(id, params);
-    setFindings(res.data);
+    try {
+      const params = {};
+      if (filters.severity) params.severity = filters.severity;
+      if (filters.triage_status) params.triage_status = filters.triage_status;
+      const res = await findingsApi.list(id, params);
+      setFindings(res.data);
+    } catch (err) {
+      console.error('Failed to load findings:', err);
+    }
   };
 
+  // Initial load + poll for non-complete scans.
   useEffect(() => {
     loadScan();
     loadFindings();
     const interval = setInterval(() => {
       loadScan();
-      if (scan?.status === 'complete') loadFindings();
     }, 3000);
     return () => clearInterval(interval);
-  }, [id, filters, scan?.status]);
+  }, [id]);
+
+  // Re-fetch findings when filters change.
+  useEffect(() => {
+    loadFindings();
+  }, [filters]);
+
+  // Poll for findings only when scan is in progress.
+  useEffect(() => {
+    if (!scan || scan.status === 'complete') return;
+    const interval = setInterval(() => {
+      loadFindings();
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [scan?.status]);
 
   const exportReport = async () => {
-    const res = await reports.markdown(id, false);
-    setReport(res.data.content);
+    setLoading(true);
+    try {
+      const res = await reports.markdown(id, false);
+      setReport(res.data.content);
+    } catch (err) {
+      alert('Failed to generate report: ' + (err.response?.data?.detail || err.message));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const downloadPdf = async () => {
+    setLoading(true);
+    try {
+      const res = await reports.pdf(id, false);
+      const blob = new Blob([res.data], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `codesentry-report-${id}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      alert('Failed to generate PDF: ' + (err.response?.data?.detail || err.message));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const downloadReport = () => {
+    const blob = new Blob([report], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `codesentry-report-${id}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   if (!scan) return <div className="container">Loading...</div>;
@@ -65,7 +123,16 @@ export default function ScanDetail() {
         <h1>Scan Detail</h1>
         <div>
           <span className="badge" style={{ background: statusColor[scan.status], marginRight: '1rem' }}>{scan.status}</span>
-          {scan.status === 'complete' && <button onClick={exportReport}>Export Markdown Report</button>}
+          {scan.status === 'complete' && (
+            <>
+              <button onClick={exportReport} disabled={loading} style={{ marginRight: '0.5rem' }}>
+                {loading ? 'Generating...' : 'Preview Report'}
+              </button>
+              <button onClick={downloadPdf} disabled={loading} className="secondary">
+                Download PDF
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -87,7 +154,7 @@ export default function ScanDetail() {
         </div>
         <div>
           <label>Status</label>
-          <select value={filters.status} onChange={(e) => setFilters({ ...filters, status: e.target.value })}>
+          <select value={filters.triage_status} onChange={(e) => setFilters({ ...filters, triage_status: e.target.value })}>
             <option value="">All</option>
             <option value="open">Open</option>
             <option value="confirmed">Confirmed</option>
@@ -129,8 +196,11 @@ export default function ScanDetail() {
 
       {report && (
         <div className="card" style={{ marginTop: '2rem' }}>
-          <h3>Report Preview</h3>
-          <pre className="code">{report}</pre>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+            <h3>Report Preview</h3>
+            <button onClick={downloadReport}>Download .md</button>
+          </div>
+          <pre className="code" style={{ maxHeight: '400px', overflow: 'auto' }}>{report}</pre>
         </div>
       )}
     </div>

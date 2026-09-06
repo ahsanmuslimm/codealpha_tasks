@@ -59,6 +59,8 @@ export const findings = {
 export const reports = {
   markdown: (scanId, includeAll = false) =>
     api.post(`/api/reports/scan/${scanId}/markdown`, { include_all: includeAll }),
+  pdf: (scanId, includeAll = false) =>
+    api.post(`/api/reports/scan/${scanId}/pdf`, { include_all: includeAll }, { responseType: 'blob' }),
 };
 
 export const dashboard = {
