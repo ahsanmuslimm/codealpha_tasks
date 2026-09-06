@@ -41,7 +41,7 @@ services:
 
   worker:
     build:
-      context: ./backend
+      context: ./worker
       dockerfile: Dockerfile
     environment:
       DATABASE_URL: postgresql://codesentry:codesentry@db:5432/codesentry
