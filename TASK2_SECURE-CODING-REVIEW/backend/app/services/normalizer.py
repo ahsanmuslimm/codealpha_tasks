@@ -97,9 +97,23 @@ def normalize_semgrep(semgrep_json_path: str) -> List[Finding]:
 
 
 def _osv_severity(severity_obj: dict) -> Severity:
+    """Map an OSV severity entry to our Severity enum.
+
+    OSV format can be:
+      {"type": "CVSS_V3", "score": 9.5}          # score is a float directly
+      {"type": "CVSS_V3", "score": {"score": 9.5}} # score nested (some older feeds)
+    """
     if not severity_obj:
         return Severity.medium
-    score = severity_obj.get("score", 0)
+    raw = severity_obj.get("score", 0)
+    # Handle both float and nested-dict forms.
+    if isinstance(raw, dict):
+        score = float(raw.get("score", 0))
+    else:
+        try:
+            score = float(raw)
+        except (TypeError, ValueError):
+            score = 0.0
     if score >= 9.0:
         return Severity.critical
     if score >= 7.0:

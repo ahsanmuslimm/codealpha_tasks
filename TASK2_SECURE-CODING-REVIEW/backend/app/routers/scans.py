@@ -40,8 +40,19 @@ def trigger_scan(
     db.commit()
     db.refresh(scan)
 
-    # Queue the Celery task.
-    run_scan.delay(str(scan.id))
+    try:
+        run_scan.delay(str(scan.id))
+    except Exception as exc:
+        # If the task broker (Redis) is unavailable, mark the scan failed immediately
+        # rather than leaving it stuck in 'queued' forever.
+        scan.status = ScanStatus.failed
+        scan.error_message = f"Could not queue scan task: {exc}"
+        db.commit()
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Scan queue unavailable. Ensure Redis / Celery worker is running.",
+        )
+
     return scan
 
 

@@ -23,6 +23,15 @@ class Settings(BaseSettings):
     scan_memory_limit: str = "2g"
     scan_cpu_limit: float = 2.0
 
+    # Set to false for local dev without Docker.
+    # When false, Semgrep/OSV-Scanner are invoked directly (or fixture outputs
+    # are used as fallback if the tools aren't installed).
+    use_docker_worker: bool = True
+
+    # Run Celery tasks synchronously in-process (no Redis needed).
+    # Set to true for local dev / testing.
+    celery_task_always_eager: bool = False
+
     uploads_dir: str = "/app/uploads"
     artifacts_dir: str = "/app/artifacts"
 
