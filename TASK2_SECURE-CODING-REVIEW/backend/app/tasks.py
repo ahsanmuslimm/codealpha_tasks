@@ -75,8 +75,9 @@ def run_scan(self, scan_id: str) -> dict:
             cmd.extend(["-v", f"{source_mount}:/workspace/source:ro"])
             cmd.extend(["--network", "none"])
         else:
-            # Git clone requires network; validation occurs before this stage.
-            pass
+            # Git clone needs outbound network access to clone the repository.
+            # The URL has already been validated (SSRF check) before reaching this point.
+            cmd.extend(["--network", "bridge"])
 
         cmd.append("codesentry-worker")
 

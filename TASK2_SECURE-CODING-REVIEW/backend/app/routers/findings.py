@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import case
 from sqlalchemy.orm import Session
 
 from app.auth import get_current_user
@@ -56,14 +57,18 @@ def list_findings(
     if owasp_category:
         q = q.filter(Finding.owasp_category == owasp_category)
 
+    # Sort Critical → High → Medium → Low → Info using an explicit case expression.
+    severity_order = case(
+        (Finding.severity == Severity.critical, 0),
+        (Finding.severity == Severity.high, 1),
+        (Finding.severity == Severity.medium, 2),
+        (Finding.severity == Severity.low, 3),
+        (Finding.severity == Severity.info, 4),
+        else_=5,
+    )
+
     return (
-        q.order_by(
-            Finding.severity == Severity.critical,
-            Finding.severity == Severity.high,
-            Finding.severity == Severity.medium,
-            Finding.severity == Severity.low,
-            Finding.severity == Severity.info,
-        )
+        q.order_by(severity_order)
         .offset(skip)
         .limit(limit)
         .all()

@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Tuple
 from urllib.parse import urlparse
 
+
 class ValidationError(ValueError):
     """Raised when an input fails a security validation."""
     pass
@@ -44,10 +45,7 @@ def validate_git_url(url: str) -> str:
 
     # Normalize ssh-style URLs (git@host:path) by requiring an explicit scheme.
     if not parsed.scheme and url.startswith("git@"):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="SSH-style URLs must use explicit ssh:// scheme",
-        )
+        raise ValidationError("SSH-style URLs must use explicit ssh:// scheme")
 
     if parsed.scheme.lower() not in ALLOWED_GIT_SCHEMES:
         raise ValidationError(f"URL scheme must be one of {sorted(ALLOWED_GIT_SCHEMES)}")

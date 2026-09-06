@@ -58,6 +58,7 @@ class Scan(Base):
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     project_id = Column(String(36), ForeignKey("projects.id"), nullable=False, index=True)
     status = Column(Enum(ScanStatus), default=ScanStatus.queued, nullable=False)
+    created_at = Column(DateTime(timezone=True), default=now_utc)
     started_at = Column(DateTime(timezone=True), nullable=True)
     completed_at = Column(DateTime(timezone=True), nullable=True)
     error_message = Column(Text, nullable=True)

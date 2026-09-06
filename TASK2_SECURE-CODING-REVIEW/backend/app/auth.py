@@ -1,10 +1,15 @@
 from datetime import datetime, timedelta, timezone
 from typing import Optional
+import warnings
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
-from passlib.context import CryptContext
+# Suppress passlib's bcrypt __about__ AttributeError warning (cosmetic compat issue
+# with bcrypt >= 4.x — functionality is unaffected).
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
 from app.config import get_settings

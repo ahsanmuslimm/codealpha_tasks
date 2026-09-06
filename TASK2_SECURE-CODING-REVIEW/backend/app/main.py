@@ -48,7 +48,7 @@ def dashboard(
     project_ids_subquery = (
         db.query(Project.id)
         .filter(Project.owner_id == current_user.id)
-        .subquery()
+        .scalar_subquery()
     )
 
     total_projects = db.query(Project).filter(Project.owner_id == current_user.id).count()

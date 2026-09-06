@@ -54,6 +54,7 @@ class ScanOut(BaseModel):
     id: UUID
     project_id: UUID
     status: ScanStatus
+    created_at: Optional[datetime] = None
     started_at: Optional[datetime]
     completed_at: Optional[datetime]
     error_message: Optional[str]

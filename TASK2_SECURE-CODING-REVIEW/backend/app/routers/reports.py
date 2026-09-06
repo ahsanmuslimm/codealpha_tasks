@@ -136,5 +136,25 @@ def export_pdf(
     html = md_lib.markdown(md_response["content"])
 
     pdf_path = f"/tmp/report-{scan_id}.pdf"
-    HTML(string=html).write_pdf(pdf_path)
-    return FileResponse(pdf_path, media_type="application/pdf", filename=f"codesentry-report-{scan_id}.pdf")
+    try:
+        HTML(string=html).write_pdf(pdf_path)
+        return FileResponse(
+            pdf_path,
+            media_type="application/pdf",
+            filename=f"codesentry-report-{scan_id}.pdf",
+            background=_cleanup_after_send(pdf_path),
+        )
+    except Exception as exc:
+        # Clean up the temp file if response construction fails.
+        if os.path.exists(pdf_path):
+            os.remove(pdf_path)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"PDF generation failed: {exc}",
+        )
+
+
+def _cleanup_after_send(path: str):
+    """Return a BackgroundTask that deletes the temp file after the response is sent."""
+    from starlette.background import BackgroundTask
+    return BackgroundTask(lambda: os.path.exists(path) and os.remove(path))
