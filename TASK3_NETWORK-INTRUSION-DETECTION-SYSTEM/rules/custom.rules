@@ -1,0 +1,106 @@
+# ============================================================
+#  Custom IDS rules - CodeAlpha TASK3 (Network Intrusion Detection System)
+#
+#  Suricata/Snort syntax. This file is loaded BOTH by the bundled
+#  Python signature engine (nids/rule_engine.py) and by a real
+#  Suricata deployment (see docs/SURICATA_DEPLOYMENT.md).
+#
+#  Priority convention: 1 = highest ... 4 = lowest
+#  (mapped internally to severity 4 Critical ... 1 Low)
+# ============================================================
+
+# ------------------------------------------------------------
+# 1. RECONNAISSANCE / SCANNING
+# ------------------------------------------------------------
+
+# TCP SYN sweep: many SYNs from one source in a short burst
+alert tcp any any -> $HOME_NET any (msg:"PORT SCAN: TCP SYN sweep detected"; flags:S; detection_filter:track by_src, count 20, seconds 3; classtype:attempted-recon; sid:1000001; rev:3;)
+
+# ICMP host-discovery sweep
+alert icmp any any -> $HOME_NET any (msg:"PORT SCAN: ICMP host discovery sweep"; itype:8; detection_filter:track by_src, count 15, seconds 5; classtype:attempted-recon; sid:1000002; rev:3;)
+
+# Well-known scanner user agents
+alert http any any -> $HOME_NET $HTTP_PORTS (msg:"RECON: Nmap scripting engine user-agent"; flow:to_server; http_user_agent; content:"Nmap Scripting Engine"; nocase; classtype:attempted-recon; sid:1000003; rev:2;)
+alert http any any -> $HOME_NET $HTTP_PORTS (msg:"RECON: Nikto web scanner detected"; flow:to_server; http_user_agent; content:"Nikto"; nocase; classtype:attempted-recon; sid:1000004; rev:2;)
+alert http any any -> $HOME_NET $HTTP_PORTS (msg:"RECON: sqlmap injection probe"; flow:to_server; http_user_agent; content:"sqlmap"; nocase; classtype:attempted-recon; sid:1000005; rev:2;)
+
+# ------------------------------------------------------------
+# 2. BRUTE FORCE / CREDENTIAL ABUSE
+# ------------------------------------------------------------
+
+# SSH connection burst (SYNs to :22)
+alert tcp any any -> $HOME_NET 22 (msg:"BRUTE FORCE: SSH login burst"; flags:S; detection_filter:track by_src, count 8, seconds 60; classtype:attempted-admin; sid:1000101; rev:3;)
+
+# FTP login attempts burst
+alert tcp any any -> $HOME_NET 21 (msg:"BRUTE FORCE: FTP login burst"; flow:to_server; content:"USER "; nocase; detection_filter:track by_src, count 5, seconds 60; classtype:attempted-admin; sid:1000102; rev:3;)
+
+# Repeated web logins
+alert http any any -> $HOME_NET $HTTP_PORTS (msg:"BRUTE FORCE: repeated web login attempts"; flow:to_server; http_uri; content:"/login"; nocase; detection_filter:track by_src, count 10, seconds 60; classtype:web-application-attack; sid:1000103; rev:3;)
+
+# RDP connection burst
+alert tcp any any -> $HOME_NET 3389 (msg:"BRUTE FORCE: RDP login burst"; flags:S; detection_filter:track by_src, count 8, seconds 60; classtype:attempted-admin; sid:1000104; rev:2;)
+
+# Cleartext password over FTP (policy: credentials in transit)
+alert tcp $HOME_NET any -> any 21 (msg:"POLICY: FTP cleartext password sent"; flow:to_server; content:"PASS "; nocase; classtype:policy-violation; sid:1000105; rev:2;)
+
+# ------------------------------------------------------------
+# 3. DENIAL OF SERVICE
+# ------------------------------------------------------------
+
+alert tcp any any -> $HOME_NET any (msg:"DOS: SYN flood rate exceeded"; flags:S; detection_filter:track by_src, count 100, seconds 2; classtype:attempted-dos; sid:1000201; rev:3;)
+alert udp any any -> $HOME_NET any (msg:"DOS: UDP flood rate exceeded"; detection_filter:track by_src, count 200, seconds 2; classtype:attempted-dos; sid:1000202; rev:3;)
+alert icmp any any -> $HOME_NET any (msg:"DOS: ICMP flood detected"; itype:8; detection_filter:track by_src, count 60, seconds 2; classtype:attempted-dos; sid:1000203; rev:3;)
+alert http any any -> $HOME_NET $HTTP_PORTS (msg:"DOS: HTTP GET flood"; flow:to_server; content:"GET /"; depth:5; detection_filter:track by_src, count 150, seconds 5; classtype:attempted-dos; sid:1000204; rev:2;)
+
+# ------------------------------------------------------------
+# 4. WEB ATTACKS
+# ------------------------------------------------------------
+
+alert http any any -> $HOME_NET $HTTP_PORTS (msg:"WEB ATTACK: SQL injection UNION SELECT"; flow:to_server; http_uri; content:"union"; nocase; http_uri; content:"select"; nocase; classtype:web-application-attack; sid:1000301; rev:3;)
+alert http any any -> $HOME_NET $HTTP_PORTS (msg:"WEB ATTACK: SQL injection tautology"; flow:to_server; http_uri; pcre:"/(\%27|')(\s)*(or|and)(\s*)(\%31|1)(=)(\%31|1)/i"; classtype:web-application-attack; sid:1000302; rev:3;)
+alert http any any -> $HOME_NET $HTTP_PORTS (msg:"WEB ATTACK: SQL injection time-based (sleep/benchmark)"; flow:to_server; http_uri; pcre:"/(sleep|benchmark|waitfor)\s*\(/i"; classtype:web-application-attack; sid:1000303; rev:2;)
+alert http any any -> $HOME_NET $HTTP_PORTS (msg:"WEB ATTACK: XSS script tag in request"; flow:to_server; http_uri; content:"<script"; nocase; classtype:web-application-attack; sid:1000304; rev:3;)
+alert http any any -> $HOME_NET $HTTP_PORTS (msg:"WEB ATTACK: XSS event handler injection"; flow:to_server; http_uri; pcre:"/on(error|load|click|mouseover)\s*=/i"; classtype:web-application-attack; sid:1000305; rev:2;)
+alert http any any -> $HOME_NET $HTTP_PORTS (msg:"WEB ATTACK: path traversal to /etc/passwd"; flow:to_server; http_uri; content:"/etc/passwd"; nocase; classtype:web-application-attack; sid:1000306; rev:3;)
+alert http any any -> $HOME_NET $HTTP_PORTS (msg:"WEB ATTACK: encoded directory traversal"; flow:to_server; http_uri; pcre:"/(\.\.\/|%2e%2e(%2f|\/))/i"; classtype:web-application-attack; sid:1000307; rev:2;)
+alert http any any -> $HOME_NET $HTTP_PORTS (msg:"EXPLOIT: Log4Shell JNDI lookup (CVE-2021-44228)"; flow:to_server; content:"${jndi:"; nocase; classtype:attempted-admin; sid:1000308; rev:2;)
+alert http any any -> $HOME_NET $HTTP_PORTS (msg:"EXPLOIT: Shellshock bash function injection"; flow:to_server; http_header; content:"() {"; nocase; classtype:attempted-admin; sid:1000309; rev:3;)
+alert http any any -> $HOME_NET $HTTP_PORTS (msg:"EXPLOIT: PHP code injection attempt"; flow:to_server; http_uri; content:"<?php"; nocase; classtype:web-application-attack; sid:1000310; rev:3;)
+alert http any any -> $HOME_NET $HTTP_PORTS (msg:"EXPLOIT: webshell upload (eval/base64)"; flow:to_server; pcre:"/eval\s*\(\s*(base64_decode|gzinflate|str_rot13)/i"; classtype:attempted-admin; sid:1000311; rev:2;)
+
+# ------------------------------------------------------------
+# 5. MALWARE / C2 / EXPLOIT KITS
+# ------------------------------------------------------------
+
+# Common C2 gate endpoint pattern
+alert http any any -> $HOME_NET $HTTP_PORTS (msg:"MALWARE: C2 beacon to suspicious gate endpoint"; flow:to_server; http_uri; content:"/gate.php"; nocase; priority:2; classtype:trojan-activity; sid:1000401; rev:3;)
+
+# Metasploit default reverse-shell port
+alert tcp any any -> $HOME_NET 4444 (msg:"EXPLOIT: traffic to Metasploit default port 4444"; flags:S; classtype:attempted-admin; sid:1000402; rev:2;)
+
+# SMBv1 exploit probing (EternalBlue / MS17-010 family)
+alert tcp any any -> $HOME_NET 445 (msg:"EXPLOIT: possible EternalBlue/MS17-010 SMB probe"; flow:to_server; content:"|ff|SMB"; offset:4; depth:8; classtype:attempted-admin; sid:1000403; rev:4;)
+
+# Scripted clients touching admin endpoints (weak C2 / recon indicator)
+alert http any any -> $HOME_NET $HTTP_PORTS (msg:"MALWARE: scripted POST with encoded payload"; flow:to_server; http_method; content:"POST"; pcre:"/(cmd=|exec=|payload=|data=)[A-Za-z0-9+\/]{40,}={0,2}/"; classtype:trojan-activity; sid:1000404; rev:2;)
+
+# ------------------------------------------------------------
+# 6. DNS ABUSE / EXFILTRATION
+# ------------------------------------------------------------
+
+# DNS query burst (tunnelling / beaconing indicator)
+alert dns any any -> $HOME_NET any (msg:"EXFIL: DNS query burst possible tunnelling"; detection_filter:track by_src, count 40, seconds 60; classtype:policy-violation; sid:1000501; rev:2;)
+
+# High-entropy long label inside the DNS query (data encoded in hostname)
+alert dns any any -> any any (msg:"EXFIL: DNS tunnelling high-entropy label"; pcre:"/(?:^|\.)[a-z0-9]{32,}\./i"; detection_filter:track by_src, count 2, seconds 30; classtype:policy-violation; sid:1000502; rev:3;)
+
+# ------------------------------------------------------------
+# 7. POLICY / MISC
+# ------------------------------------------------------------
+
+# Telnet is banned on the protected network
+alert tcp $HOME_NET any -> any 23 (msg:"POLICY: outbound Telnet connection"; flags:S; classtype:policy-violation; sid:1000601; rev:2;)
+alert tcp any any -> $HOME_NET 23 (msg:"POLICY: inbound Telnet connection"; flags:S; classtype:policy-violation; sid:1000602; rev:2;)
+
+# BitTorrent/P2P handshake on the protected network
+alert tcp $HOME_NET any -> any any (msg:"POLICY: BitTorrent P2P handshake detected"; content:"BitTorrent protocol"; depth:20; classtype:policy-violation; sid:1000603; rev:2;)

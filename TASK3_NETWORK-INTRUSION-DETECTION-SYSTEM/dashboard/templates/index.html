@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PyNIDS - Network Intrusion Detection Console</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="shield">🛡️</span>
+      <div>
+        <h1>PyNIDS <span class="accent">Command Center</span></h1>
+        <div class="subtitle">Network Intrusion Detection System &mdash; CodeAlpha TASK3</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="engine-status" id="engineStatus">
+        <span class="dot" id="engineDot"></span>
+        <span id="engineText">checking engine&hellip;</span>
+      </div>
+      <button class="btn" id="btnExport" title="Download all alerts as CSV">Export CSV</button>
+      <label class="auto-refresh">
+        <input type="checkbox" id="autoRefresh" checked>
+        auto-refresh
+      </label>
+    </div>
+  </header>
+
+  <main class="grid">
+    <!-- KPI cards -->
+    <section class="kpis">
+      <div class="kpi">
+        <div class="kpi-value" id="kpiTotal">0</div>
+        <div class="kpi-label">Total Alerts</div>
+      </div>
+      <div class="kpi critical">
+        <div class="kpi-value" id="kpiCritical">0</div>
+        <div class="kpi-label">Critical</div>
+      </div>
+      <div class="kpi high">
+        <div class="kpi-value" id="kpiHigh">0</div>
+        <div class="kpi-label">High</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-value" id="kpiSources">0</div>
+        <div class="kpi-label">Attacker IPs</div>
+      </div>
+      <div class="kpi blocked">
+        <div class="kpi-value" id="kpiBlocked">0</div>
+        <div class="kpi-label">Blocked IPs</div>
+      </div>
+    </section>
+
+    <!-- charts row -->
+    <section class="cards">
+      <div class="card span-2">
+        <h2>Alerts over time <span class="hint">alerts / minute (last hour)</span></h2>
+        <div id="chartTimeline" class="chart"></div>
+      </div>
+      <div class="card">
+        <h2>Severity distribution</h2>
+        <div id="chartSeverity" class="chart"></div>
+      </div>
+      <div class="card">
+        <h2>Attack categories</h2>
+        <div id="chartCategories" class="chart"></div>
+      </div>
+      <div class="card">
+        <h2>Top attacker sources</h2>
+        <div id="chartSources" class="chart"></div>
+      </div>
+    </section>
+
+    <!-- response + alerts -->
+    <section class="cards lower">
+      <div class="card">
+        <h2>Response &mdash; blocked IPs</h2>
+        <form id="blockForm" class="block-form">
+          <input type="text" id="blockIp" placeholder="e.g. 10.0.0.66" autocomplete="off">
+          <button type="submit" class="btn danger">Block IP</button>
+        </form>
+        <div id="blockedList" class="blocked-list"><p class="muted">No active blocks.</p></div>
+      </div>
+      <div class="card span-2">
+        <h2>Live alert feed</h2>
+        <div class="filters">
+          <select id="filterSeverity">
+            <option value="">All severities</option>
+            <option value="4">4 - Critical</option>
+            <option value="3">3 - High</option>
+            <option value="2">2 - Medium</option>
+            <option value="1">1 - Low</option>
+          </select>
+          <select id="filterCategory">
+            <option value="">All categories</option>
+          </select>
+          <input type="search" id="filterSearch" placeholder="search alerts&hellip;">
+          <button class="btn" id="btnRefresh">Refresh</button>
+        </div>
+        <div class="table-wrap">
+          <table id="alertTable">
+            <thead>
+              <tr><th>Time</th><th>Sev</th><th>Category</th><th>Alert</th>
+                  <th>Source</th><th>Destination</th><th>Action</th></tr>
+            </thead>
+            <tbody id="alertRows">
+              <tr><td colspan="7" class="muted">loading&hellip;</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="muted small" id="alertCount"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    PyNIDS v2.0 &mdash; signature engine + behavioural detectors + automated response
+    &middot; data: <span id="dbPath">data/alerts.db</span>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+  <script>window.NIDS_REFRESH_SECONDS = {{ refresh_seconds }};</script>
+</body>
+</html>

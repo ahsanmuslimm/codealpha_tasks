@@ -1,0 +1,243 @@
+TASK2_SECURE-CODING-REVIEW\backend>  cd d:\WORKING\JOB_SIMS\internship-co
+INFO:     127.0.0.1:63870 - "POST /api/projects HTTP/1.1" 400 Bad RequestINFO:     127.0.0.1:63871 - "POST /api/projects HTTP/1.1" 400 Bad RequestINFO:     127.0.0.1:63893 - "POST /api/auth/login HTTP/1.1" 200 OK       
+INFO:     127.0.0.1:63894 - "POST /api/projects/upload HTTP/1.1" 201 Created
+INFO:     127.0.0.1:63895 - "POST /api/projects/upload HTTP/1.1" 400 Bad 
+Request
+INFO:     127.0.0.1:63983 - "POST /api/auth/login HTTP/1.1" 200 OK       
+INFO:     127.0.0.1:63984 - "GET /api/projects HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63985 - "POST /api/scans/project/cf94cc20-73d5-449c-8937-a91de0ed8f61 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64029 - "POST /api/auth/login HTTP/1.1" 200 OK       
+INFO:     127.0.0.1:64032 - "GET /api/projects HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64051 - "POST /api/auth/login HTTP/1.1" 200 OK       
+INFO:     127.0.0.1:64054 - "POST /api/scans/project/cf94cc20-73d5-449c-8937-a91de0ed8f61 HTTP/1.1" 404 Not Found
+(.venv) PS D:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\backend>  cd d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\backend; d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Scripts\uvicorn.exe app.main:app --host 127.0.0.1 --port 8000
+WARNING: psycopg2 unavailable, falling back to sqlite:///./codesentry.db
+INFO:     Started server process [63956]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 404 Not Found
+(trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\passlib\handlers\bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+              ^^^^^^^^^^^^^^^^^
+AttributeError: module 'bcrypt' has no attribute '__about__'
+INFO:     127.0.0.1:64367 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64368 - "GET /api/projects HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64423 - "GET / HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64369 - "POST /api/scans/project/cf94cc20-73d5-449c-8937-a91de0ed8f61 HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\redis\connection.py", line 276, in connect
+    sock = self.retry.call_with_retry(
+        lambda: self._connect(), lambda error: self.disconnect(error)    
+    )
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\redis\retry.py", line 46, in call_with_retry
+    return do()
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\redis\connection.py", line 277, in <lambda>
+    lambda: self._connect(), lambda error: self.disconnect(error)        
+            ~~~~~~~~~~~~~^^
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\redis\connection.py", line 607, in _connect
+    for res in socket.getaddrinfo(
+               ~~~~~~~~~~~~~~~~~~^
+        self.host, self.port, self.socket_type, socket.SOCK_STREAM       
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^       
+    ):
+    ^
+  File "C:\Python314\Lib\socket.py", line 983, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 11001] getaddrinfo failed
+
+During handling of the above exception, another exception occurred:      
+
+Traceback (most recent call last):
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\celery\backends\redis.py", line 127, in reconnect_on_error
+    yield
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\celery\backends\redis.py", line 177, in _consume_from
+    self._pubsub.subscribe(key)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\redis\client.py", line 929, in subscribe
+    ret_val = self.execute_command("SUBSCRIBE", *new_channels.keys())    
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\redis\client.py", line 758, in execute_command
+    self.connection = self.connection_pool.get_connection(
+                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        "pubsub", self.shard_hint
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\redis\connection.py", line 1109, in get_connection
+    connection.connect()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\redis\connection.py", line 282, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 11001 connecting to redis:6379. getaddrinfo failed.
+
+During handling of the above exception, another exception occurred:      
+
+Traceback (most recent call last):
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\redis\connection.py", line 276, in connect
+    sock = self.retry.call_with_retry(
+        lambda: self._connect(), lambda error: self.disconnect(error)    
+    )
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\redis\retry.py", line 46, in call_with_retry
+    return do()
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\redis\connection.py", line 277, in <lambda>
+    lambda: self._connect(), lambda error: self.disconnect(error)        
+            ~~~~~~~~~~~~~^^
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\redis\connection.py", line 607, in _connect
+    for res in socket.getaddrinfo(
+               ~~~~~~~~~~~~~~~~~~^
+        self.host, self.port, self.socket_type, socket.SOCK_STREAM       
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^       
+    ):
+    ^
+  File "C:\Python314\Lib\socket.py", line 983, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 11001] getaddrinfo failed
+
+During handling of the above exception, another exception occurred:      
+
+Traceback (most recent call last):
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\kombu\connection.py", line 474, in _reraise_as_library_errors
+    yield
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\celery\app\base.py", line 800, in send_task
+    self.backend.on_task_call(P, task_id)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\celery\backends\redis.py", line 373, in on_task_call
+    self.result_consumer.consume_from(task_id)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\celery\backends\redis.py", line 169, in consume_from
+    return self.start(task_id)
+           ~~~~~~~~~~^^^^^^^^^
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\celery\backends\redis.py", line 147, in start
+    self._consume_from(initial_task_id)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\celery\backends\redis.py", line 176, in _consume_from
+    with self.reconnect_on_error():
+         ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Python314\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\celery\backends\redis.py", line 130, in reconnect_on_error
+    self._ensure(self._reconnect_pubsub, ())
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\celery\backends\redis.py", line 384, in ensure
+    return retry_over_time(
+        fun, self.connection_errors, args, {},
+        partial(self.on_connection_error, max_retries),
+        **retry_policy)
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\kombu\utils\functional.py", line 318, in retry_over_time
+    return fun(*args, **kwargs)
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\celery\backends\redis.py", line 106, in _reconnect_pubsub
+    metas = self.backend.client.mget(self.subscribed_to)
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\redis\commands\core.py", 
+line 2016, in mget
+    return self.execute_command("MGET", *args, **options)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\redis\client.py", line 542, in execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+                              ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\redis\connection.py", line 1109, in get_connection
+    connection.connect()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\redis\connection.py", line 282, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 11001 connecting to redis:6379. getaddrinfo failed.
+
+The above exception was the direct cause of the following exception:     
+
+Traceback (most recent call last):
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 399, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\starlette\applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+    raise exc
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\starlette\middleware\cors.py", line 85, in __call__
+    await self.app(scope, receive, send)
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\starlette\_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\starlette\routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\starlette\routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\starlette\routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\starlette\routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\starlette\_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\starlette\routing.py", line 72, in app
+    response = await func(request)
+               ^^^^^^^^^^^^^^^^^^^
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\fastapi\routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine    
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^    
+    )
+    ^
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\fastapi\routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\starlette\concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\anyio\to_thread.py", line 65, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter 
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+    )
+    ^
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2641, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 1033, in run
+    result = context.run(func, *args)
+  File "D:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\backend\app\routers\scans.py", line 44, in trigger_scan
+    run_scan.delay(str(scan.id))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\celery\app\task.py", line 444, in delay
+    return self.apply_async(args, kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\celery\app\task.py", line 594, in apply_async
+    return app.send_task(
+           ~~~~~~~~~~~~~^
+        self.name, args, kwargs, task_id=task_id, producer=producer,     
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^     
+    ...<2 lines>...
+        **options
+        ^^^^^^^^^
+    )
+    ^
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\celery\app\base.py", line 798, in send_task
+    with P.connection._reraise_as_library_errors():
+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Python314\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "d:\WORKING\JOB_SIMS\internship-codealpha\CYBER-SECURITY_TASKS\TASK2_SECURE-CODING-REVIEW\.venv\Lib\site-packages\kombu\connection.py", line 478, in _reraise_as_library_errors
+    raise ConnectionError(str(exc)) from exc
+kombu.exceptions.OperationalError: Error 11001 connecting to redis:6379. 
+getaddrinfo failed.

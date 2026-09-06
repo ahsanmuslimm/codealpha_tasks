@@ -1,0 +1,9 @@
+# PyNIDS - Network Intrusion Detection System (CodeAlpha TASK3)
+# Core runtime
+scapy>=2.5          # packet capture / crafting / pcap reading
+flask>=3.0          # SOC dashboard
+PyYAML>=6.0         # configuration
+requests>=2.28      # webhook notifications (response module)
+
+# Development / testing
+pytest>=7.0

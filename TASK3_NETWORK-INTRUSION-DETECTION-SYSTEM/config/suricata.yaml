@@ -1,0 +1,115 @@
+# ============================================================
+#  Suricata deployment configuration - PyNIDS / CodeAlpha TASK3
+#
+#  This is a complete working configuration tuned for the project.
+#  Two ways to use it (see docs/SURICATA_DEPLOYMENT.md):
+#
+#    A) merge the sections below into your distro's /etc/suricata/suricata.yaml
+#       (recommended - keeps upstream defaults for everything else)
+#    B) copy this file to /etc/suricata/suricata.yaml and validate:
+#         suricata -T -c /etc/suricata/suricata.yaml
+# ============================================================
+
+vars:
+  address-groups:
+    # protected networks - adjust to your environment
+    HOME_NET: "[192.168.1.0/24,172.16.5.0/24]"
+    EXTERNAL_NET: "!$HOME_NET"
+
+  port-groups:
+    HTTP_PORTS: "80,443,8080,8000"
+    SHELLCODE_PORTS: "!80"
+
+default-log-dir: /var/log/suricata
+
+# ------------------------------------------------------------
+# capture (AF_PACKET on Linux)
+# ------------------------------------------------------------
+af-packet:
+  - interface: eth0
+    threads: auto
+    cluster-id: 99
+    cluster-type: cluster_flow
+    defrag: yes
+    use-mmap: yes
+    tpacket-v3: yes
+    buffer-size: 64535
+    # copy-mode / copy-iface enable inline IPS bridging - comment out for IDS
+    # copy-mode: ips
+    # copy-iface: eth1
+
+pcap:
+  - interface: eth0
+
+# ------------------------------------------------------------
+# outputs
+# ------------------------------------------------------------
+outputs:
+  # main machine-readable log consumed by tools/import_eve.py
+  - eve-log:
+      enabled: yes
+      filetype: regular
+      filename: eve.json
+      community-id: yes
+      types:
+        - alert
+        - anomaly
+        - http:
+            extended: yes
+        - dns:
+            version: 2
+        - tls:
+            extended: yes
+        - flow
+
+  # human-readable fast log
+  - fast:
+      enabled: yes
+      filename: fast.log
+      append: yes
+
+  - stats:
+      enabled: yes
+      interval: 30
+
+# ------------------------------------------------------------
+# detection
+# ------------------------------------------------------------
+default-rule-path: /etc/suricata/rules
+rule-files:
+  - custom.rules            # the project rule pack (rules/custom.rules)
+  # - suricata.rules        # enable the ET/open ruleset when installed
+
+detect-engine:
+  - profile: medium
+  - rule-reload: true
+
+# ------------------------------------------------------------
+# runmode / threading
+# ------------------------------------------------------------
+runmode: workers
+max-pending-packets: 1024
+
+threading:
+  set-cpu-affinity: no
+
+# ------------------------------------------------------------
+# stream / host defaults (sane for lab + small production)
+# ------------------------------------------------------------
+stream:
+  memcap: 256mb
+  checksum-validation: no      # NIC offloads often break checksums
+  inline: no
+  reassembly:
+    memcap: 512mb
+    depth: 1mb
+
+host:
+  hash-size: 4096
+  prealloc: 1000
+  memcap: 32mb
+
+defrag:
+  memcap: 64mb
+  hash-size: 65536
+  trackers: 65535

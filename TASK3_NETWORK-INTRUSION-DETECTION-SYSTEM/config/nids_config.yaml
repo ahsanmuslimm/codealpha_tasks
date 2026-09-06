@@ -1,0 +1,98 @@
+# ============================================================
+# PyNIDS configuration - Network Intrusion Detection System
+# CodeAlpha TASK3
+#
+# Every value shown here mirrors the built-in defaults in
+# nids/config.py; uncomment / tweak what you need.
+# ============================================================
+
+general:
+  # Networks considered "inside" (used by rules as $HOME_NET).
+  # The demo/lab range is the protected 192.168.1.0/24 subnet; attackers
+  # originate from 10.0.0.0/8 which is therefore treated as external.
+  # Adjust for your own deployment!
+  home_net:
+    - 192.168.1.0/24
+    - 172.16.5.0/24
+  # IPs the response engine will never actively block
+  # (e.g. the analyst workstation, the gateway, loopback).
+  whitelist_ips:
+    - 127.0.0.1
+  db_path: data/alerts.db
+  alerts_jsonl: data/alerts.jsonl
+  log_level: INFO
+
+rules:
+  enabled: true
+  file: rules/custom.rules          # Suricata-syntax rules, shared with real Suricata
+
+detectors:
+  port_scan:
+    enabled: true
+    window_seconds: 30              # rolling observation window
+    distinct_ports: 12              # >= N distinct ports probed => scan
+    cooldown_seconds: 45            # min seconds between repeat alerts per source
+
+  brute_force:
+    enabled: true
+    window_seconds: 60
+    attempt_threshold: 8            # >= N connection attempts => brute force
+    cooldown_seconds: 60
+    auth_ports: [21, 22, 23, 25, 110, 143, 445, 1433, 3306, 3389, 5432, 5900]
+    http_failure_threshold: 10      # >= N HTTP 401/403 responses
+    http_failure_codes: [401, 403]
+
+  dos:
+    enabled: true
+    syn_flood:  { window_seconds: 10, packet_threshold: 100 }
+    udp_flood:  { window_seconds: 10, packet_threshold: 200 }
+    icmp_flood: { window_seconds: 10, packet_threshold: 60 }
+    http_flood: { window_seconds: 10, packet_threshold: 120 }
+    cooldown_seconds: 60
+
+  arp_spoof:
+    enabled: true
+    gateways: []                    # e.g. [192.168.1.1] - adds gateway-takeover checks
+    cooldown_seconds: 60
+
+  dns_tunnel:
+    enabled: true
+    max_label_length: 45            # DNS label longer than this => suspicious
+    max_name_length: 120
+    entropy_threshold: 3.5          # high-entropy label detection
+    min_entropy_label_length: 20
+    query_rate_window: 60
+    query_rate_threshold: 40        # >= N queries/min from one host
+    cooldown_seconds: 60
+
+  web_attack:
+    enabled: true                   # SQLi / XSS / traversal / log4shell / cmd injection
+    cooldown_seconds: 10
+
+response:
+  enabled: true
+  mode: simulate                    # simulate = record only, active = firewall rules
+  block_ttl_minutes: 30             # auto-unblock window for recorded blocks
+  immediate_severity: 4             # critical alerts block the source immediately
+  escalate_min_severity: 3
+  escalate_count: 4                 # >= 4 alerts with severity >= 3 within window
+  escalate_window_minutes: 5
+  whitelist_governs_active_only: true
+  notifications:
+    webhook_url: ""                 # e.g. http://127.0.0.1:9000/hook - POSTed on every block
+    email:
+      enabled: false
+      smtp_host: localhost
+      smtp_port: 25
+      from_addr: nids@localhost
+      to_addrs: []
+
+dashboard:
+  host: 127.0.0.1
+  port: 5000
+  refresh_seconds: 5
+
+capture:
+  bpf_filter: ""                    # e.g. "not host 192.168.1.5" to reduce noise
+  promisc: true
+  replay_speed: 10.0                # --replay-live speed multiplier
